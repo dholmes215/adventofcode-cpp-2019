@@ -9,7 +9,7 @@ Memory read_input(std::istream & input)
     input >> num;
     out.push_back(num);
     char comma;
-    while (std::cin >> comma >> num) {
+    while (input >> comma >> num) {
         out.push_back(num);
     }
     return out;

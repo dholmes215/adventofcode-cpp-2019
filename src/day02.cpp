@@ -20,12 +20,7 @@ int main(int /*argc*/, char ** /*argv*/)
         memory[2] = 2;
 
         Computer computer(move(memory));
-
-        print_memory(computer.memory);
-
         computer.run();
-
-        print_memory(computer.memory);
 
         cout << "Part 1: address 0 is " << computer.memory[0] << '\n';
     }
