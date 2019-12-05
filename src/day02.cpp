@@ -1,91 +1,13 @@
 // Copyright (C) 2019 David Holmes <dholmes@dholmes.us>. All rights reserved.
 
-#include <algorithm>
+#include "intcode.hpp"
+
 #include <cstdint>
-#include <iomanip>
 #include <iostream>
-#include <numeric>
 #include <vector>
 
+using namespace intcode;
 using namespace std;
-
-using Memory = vector<int32_t>;
-
-Memory read_input(istream & input)
-{
-    Memory out;
-    int32_t num;
-    input >> num;
-    out.push_back(num);
-    char comma;
-    while (cin >> comma >> num) {
-        out.push_back(num);
-    }
-    return out;
-}
-
-class Computer
-{
-public:
-    enum class State
-    {
-        Run,
-        Halt,
-    };
-
-    Computer(const Memory & memory) : memory(memory) {}
-    Computer(Memory && memory) : memory(move(memory)) {}
-    Computer(istream & input) : memory(read_input(input)) {}
-
-    State run_op()
-    {
-        int32_t opcode = memory[pc];
-        switch (opcode) {
-        case 1: {
-            int32_t operand1 = memory[memory[pc + 1]];
-            int32_t operand2 = memory[memory[pc + 2]];
-            memory[memory[pc + 3]] = operand1 + operand2;
-            pc += 4;
-            return State::Run;
-        }
-        case 2: {
-            int32_t operand1 = memory[memory[pc + 1]];
-            int32_t operand2 = memory[memory[pc + 2]];
-            memory[memory[pc + 3]] = operand1 * operand2;
-            pc += 4;
-            return State::Run;
-        }
-        case 99:
-        default:
-            return State::Halt;
-        }
-    }
-
-    void run()
-    {
-        while (run_op() == State::Run) {
-            // Keep running...
-        }
-    }
-
-    Memory memory;
-    int pc = 0;
-
-private:
-};
-
-void print_memory(const Memory & memory)
-{
-    cout << setw(8) << memory[0];
-    for (size_t i = 1; i < memory.size(); i++) {
-        cout << setw(0) << ',';
-        if (i % 4 == 0) {
-            cout << setw(0) << '\n';
-        }
-        cout << setw(8) << memory[i];
-    }
-    cout << setw(0) << '\n';
-}
 
 int main(int /*argc*/, char ** /*argv*/)
 {
