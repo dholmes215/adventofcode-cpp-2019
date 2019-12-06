@@ -1,3 +1,4 @@
+// Copyright (C) 2019 David Holmes <dholmes@dholmes.us>. All rights reserved.
 
 #ifndef AOC_INTCODE_HPP
 #define AOC_INTCODE_HPP
@@ -27,27 +28,13 @@ public:
     Computer(Memory && memory) : memory(move(memory)) {}
     Computer(std::istream & input) : memory(read_input(input)) {}
 
-    State run_op()
+    State run_op(std::istream & in, std::ostream & out);
+    State run_op();
+
+    void run(std::istream & in, std::ostream & out)
     {
-        int32_t opcode = memory[pc];
-        switch (opcode) {
-        case 1: {
-            int32_t operand1 = memory[memory[pc + 1]];
-            int32_t operand2 = memory[memory[pc + 2]];
-            memory[memory[pc + 3]] = operand1 + operand2;
-            pc += 4;
-            return State::Run;
-        }
-        case 2: {
-            int32_t operand1 = memory[memory[pc + 1]];
-            int32_t operand2 = memory[memory[pc + 2]];
-            memory[memory[pc + 3]] = operand1 * operand2;
-            pc += 4;
-            return State::Run;
-        }
-        case 99:
-        default:
-            return State::Halt;
+        while (run_op(in, out) == State::Run) {
+            // Keep running...
         }
     }
 
