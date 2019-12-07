@@ -6,11 +6,14 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <queue>
 #include <vector>
 
 namespace intcode {
 
-using Memory = std::vector<int32_t>;
+using Int = std::int32_t;
+using Memory = std::vector<Int>;
+using IntQueue = std::queue<Int>;
 
 Memory read_input(std::istream & input);
 void print_memory(const Memory & memory);
@@ -20,29 +23,45 @@ class Computer
 public:
     enum class State
     {
-        Run,
-        Halt,
+        Running,
+        Waiting,
+        Halted,
     };
 
     Computer(const Memory & memory) : memory(memory) {}
     Computer(Memory && memory) : memory(move(memory)) {}
     Computer(std::istream & input) : memory(read_input(input)) {}
 
-    State run_op(std::istream & in, std::ostream & out);
-    State run_op();
+    State run_op(IntQueue & in, IntQueue & out);
 
-    void run(std::istream & in, std::ostream & out)
+    State run(IntQueue & in, IntQueue & out)
     {
-        while (run_op(in, out) == State::Run) {
-            // Keep running...
+        // Always run at least one instruction
+        State state = State::Running;
+        while (state == State::Running) {
+            state = run_op(in, out);
         }
+        return state;
     }
 
-    void run()
+    State run()
     {
-        while (run_op() == State::Run) {
-            // Keep running...
+        IntQueue in;
+        IntQueue out;
+        Computer::State state = Computer::State::Running;
+        while (state != Computer::State::Halted) {
+            state = run(in, out);
+            while (!out.empty()) {
+                std::cout << out.front() << '\n';
+                out.pop();
+            }
+            if (state == Computer::State::Waiting) {
+                Int i;
+                std::cin >> i;
+                in.push(i);
+            }
         }
+        return state;
     }
 
     Memory memory;

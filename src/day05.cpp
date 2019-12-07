@@ -31,10 +31,10 @@ vector<string> istream_to_vector(istream & stream)
     return out;
 }
 
-stringstream run_computer(const Memory & memory, stringstream & in)
+IntQueue run_computer(const Memory & memory, IntQueue & in)
 {
     Computer computer(memory);
-    stringstream out;
+    IntQueue out;
     computer.run(in, out);
     return out;
 }
@@ -47,18 +47,18 @@ int main(int argc, char ** argv)
 
     // Part 1
     {
-        stringstream in("1\n");
+        IntQueue in;
+        in.push(1);
         auto out = run_computer(input_memory, in);
-        auto lines = istream_to_vector(out);
-        cout << "Part 1: system 1 diagnostic code is " << lines.back() << '\n';
+        cout << "Part 1: system 1 diagnostic code is " << out.back() << '\n';
     }
 
     // Part 2
     {
-        stringstream in("5\n");
+        IntQueue in;
+        in.push(1);
         auto out = run_computer(input_memory, in);
-        auto lines = istream_to_vector(out);
-        cout << "Part 2: system 5 diagnostic code is " << lines.back() << '\n';
+        cout << "Part 2: system 5 diagnostic code is " << out.back() << '\n';
     }
 
     return 0;

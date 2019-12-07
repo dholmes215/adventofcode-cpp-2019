@@ -81,35 +81,25 @@ TEST(ComputerTest, Day2Part2Result)
 TEST(ComputerTest, Day5Part1Result)
 {
     istringstream input_stream(day5_input_chars);
-    istringstream user_input_stream("1\n");
-    stringstream computer_output_stream;
+    IntQueue in;
+    in.push(1);
+    IntQueue out;
     auto input_memory = read_input(input_stream);
     Computer computer(input_memory);
-    computer.run(user_input_stream, computer_output_stream);
+    computer.run(in, out);
 
-    vector<int32_t> output_ints;
-    int output_int;
-    while (computer_output_stream >> output_int) {
-        output_ints.push_back(output_int);
-    }
-    // TODO: Verify all zeroes until end
-    ASSERT_EQ(output_ints.back(), 6745903);
+    ASSERT_EQ(out.back(), 6745903);
 }
 
 TEST(ComputerTest, Day5Part2Result)
 {
     istringstream input_stream(day5_input_chars);
-    istringstream user_input_stream("5\n");
-    stringstream computer_output_stream;
+    IntQueue in;
+    in.push(5);
+    IntQueue out;
     auto input_memory = read_input(input_stream);
     Computer computer(input_memory);
-    computer.run(user_input_stream, computer_output_stream);
-
-    vector<int32_t> output_ints;
-    int output_int;
-    while (computer_output_stream >> output_int) {
-        output_ints.push_back(output_int);
-    }
-    ASSERT_EQ(output_ints.size(), 1UL);
-    ASSERT_EQ(output_ints[0], 9168267);
+    computer.run(in, out);
+    ASSERT_EQ(out.size(), 1UL);
+    ASSERT_EQ(out.front(), 9168267);
 }

@@ -30,7 +30,7 @@ void print_memory(const Memory & memory)
     std::cout << std::setw(0) << '\n';
 }
 
-Computer::State Computer::run_op(std::istream & in, std::ostream & out)
+Computer::State Computer::run_op(IntQueue & in, IntQueue & out)
 {
     int32_t val = memory[pc];
     int32_t opcode = val % 100;
@@ -43,27 +43,30 @@ Computer::State Computer::run_op(std::istream & in, std::ostream & out)
         int32_t operand2 = mode2 ? memory[pc + 2] : memory[memory[pc + 2]];
         memory[memory[pc + 3]] = operand1 + operand2; // Never immediate mode
         pc += 4;
-        return State::Run;
+        return State::Running;
     }
     case 2: { // Multiplication
         int32_t operand1 = mode1 ? memory[pc + 1] : memory[memory[pc + 1]];
         int32_t operand2 = mode2 ? memory[pc + 2] : memory[memory[pc + 2]];
         memory[memory[pc + 3]] = operand1 * operand2; // Never immediate mode
         pc += 4;
-        return State::Run;
+        return State::Running;
     }
     case 3: { // Input
-        int32_t input;
-        in >> input;
+        if (in.empty()) {
+            return State::Waiting;
+        }
+        int32_t input = in.front();
+        in.pop();
         memory[memory[pc + 1]] = input;
         pc += 2;
-        return State::Run;
+        return State::Running;
     }
     case 4: { // Output
         int32_t operand1 = mode1 ? memory[pc + 1] : memory[memory[pc + 1]];
-        out << operand1 << '\n';
+        out.push(operand1);
         pc += 2;
-        return State::Run;
+        return State::Running;
     }
     case 5: { // jump-if-true
         int32_t operand1 = mode1 ? memory[pc + 1] : memory[memory[pc + 1]];
@@ -73,7 +76,7 @@ Computer::State Computer::run_op(std::istream & in, std::ostream & out)
         } else {
             pc += 3;
         }
-        return State::Run;
+        return State::Running;
     }
     case 6: { // jump-if-false
         int32_t operand1 = mode1 ? memory[pc + 1] : memory[memory[pc + 1]];
@@ -83,28 +86,26 @@ Computer::State Computer::run_op(std::istream & in, std::ostream & out)
         } else {
             pc += 3;
         }
-        return State::Run;
+        return State::Running;
     }
     case 7: { // less than
         int32_t operand1 = mode1 ? memory[pc + 1] : memory[memory[pc + 1]];
         int32_t operand2 = mode2 ? memory[pc + 2] : memory[memory[pc + 2]];
         memory[memory[pc + 3]] = (operand1 < operand2); // Never immediate mode
         pc += 4;
-        return State::Run;
+        return State::Running;
     }
     case 8: { // equals
         int32_t operand1 = mode1 ? memory[pc + 1] : memory[memory[pc + 1]];
         int32_t operand2 = mode2 ? memory[pc + 2] : memory[memory[pc + 2]];
         memory[memory[pc + 3]] = (operand1 == operand2); // Never immediate mode
         pc += 4;
-        return State::Run;
+        return State::Running;
     }
     case 99:
     default:
-        return State::Halt;
+        return State::Halted;
     }
 }
-
-Computer::State Computer::run_op() { return run_op(std::cin, std::cout); }
 
 } // namespace intcode
